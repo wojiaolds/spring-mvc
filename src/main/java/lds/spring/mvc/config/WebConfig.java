@@ -8,10 +8,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.ViewResolver;
-import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
@@ -30,11 +27,11 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 @EnableWebMvc
 @Configuration
 
+
 public class WebConfig implements WebMvcConfigurer {
 	//For advanced mode, you can remove @EnableWebMvc and extend directly
 	// from DelegatingWebMvcConfiguration instead of implementing WebMvcConfigurer
 	//DelegatingWebMvcConfiguration
-	
 	// 文档地址 ： https://docs.spring.io/spring/docs/5.0.2.RELEASE/spring-framework-reference/web.html#mvc-config-customize
 	// 将SpringMVC处理不了的请求交给tomcat；静态资源 就可以访问
 	@Override
