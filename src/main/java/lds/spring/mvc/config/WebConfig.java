@@ -1,6 +1,10 @@
 package lds.spring.mvc.config;
 
+import lds.spring.mvc.beanFactoryPostProcessor.MyBeanFactoryPostProcessor;
+import lds.spring.mvc.beanPostProcessor.MyBeanPostProcessor;
+import lds.spring.mvc.controller.Controller1;
 import lds.spring.mvc.interceptor.MyInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.annotation.*;
@@ -9,8 +13,12 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.*;
+import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by lds on 2019/1/25.
@@ -34,6 +42,9 @@ public class WebConfig implements WebMvcConfigurer {
 	//DelegatingWebMvcConfiguration
 	// 文档地址 ： https://docs.spring.io/spring/docs/5.0.2.RELEASE/spring-framework-reference/web.html#mvc-config-customize
 	// 将SpringMVC处理不了的请求交给tomcat；静态资源 就可以访问
+
+	@Autowired
+	private Controller1 controller1;
 	@Override
 	public void configureDefaultServletHandling ( DefaultServletHandlerConfigurer configurer ) {
 		
@@ -102,5 +113,38 @@ public class WebConfig implements WebMvcConfigurer {
 //		propertyPlaceholderConfigurer.setLocations (resource);
 //		return propertyPlaceholderConfigurer;
 //	}
+
+	@Bean
+	public SimpleUrlHandlerMapping simpleUrlHandlerMapping(){
+		SimpleUrlHandlerMapping simpleUrlHandlerMapping = new SimpleUrlHandlerMapping();
+		simpleUrlHandlerMapping.setOrder(0);
+		Map<String,Object> map = new HashMap<>();
+		map.put("/test/result.tran", controller1);
+		map.put("test.tran", controller1);
+		simpleUrlHandlerMapping.setUrlMap(map);
+		return simpleUrlHandlerMapping;
+	}
+
+//	@Bean
+//	public SimpleControllerHandlerAdapter simpleControllerHandlerAdapter(){
+//		return new SimpleControllerHandlerAdapter();
+//	}
+
+	/**
+	 * BeanFactoryPostProcessor是在其他bean实例化前就实例化了的
+	 * 不加static  MyBeanFactoryPostProcessor的实例化依赖于WebConfig
+	 * 所以实例化MyBeanFactoryPostProcessor的时候，就要先实例化WebConfig，
+	 * 此时controller1还没有被实例化，这个属性无法注入，后续实例化SimpleUrlHandlerMapping的时候就会出错
+	 * @return
+	 */
+	@Bean
+	public static MyBeanFactoryPostProcessor myBeanFactoryPostProcessor(){
+		return new MyBeanFactoryPostProcessor();
+	}
+
+	@Bean
+	public MyBeanPostProcessor myBeanPostProcessor(){
+		return new MyBeanPostProcessor();
+	}
 	
 }
